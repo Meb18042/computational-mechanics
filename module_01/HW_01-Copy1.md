@@ -65,7 +65,7 @@ print('b.', str1==str2)
 print('c.', str1>str2)
 
 print('d.', str1.lower()==str2)
-print('   To force (b) to be true, we can convert str1 to be in all lower case using the str.lower() method. This \n   will make the statement true that str1 and str2 are in fact equal.')
+print('   To force (b) to be true, we can connvert str1 to be in all lower case using the str.lower() method. This \n   will make the statement true that str1 and str2 are in fact equal.')
 ```
 
 3. The following code has an error, fix the error so that the correct result is returned:
@@ -90,10 +90,6 @@ if x<y and y==20:
     print('y is 20 and x is less than y')
 else:
     print('x is not less than y')
-    
-    
-print()
-print('The code has been fixed. The variable x was of the wrong type, it is now corrected.')
 ```
 
 4. Create a script that takes the clock hour in 24 hours and prints the clock hour with am or pm. 
@@ -131,7 +127,7 @@ The above script is verified to work properly.
 ```{code-cell} ipython3
 import numpy as np
 import matplotlib.pyplot as plt
-#plt.style.use('fivethirtyeight')
+plt.style.use('fivethirtyeight')
 ```
 
 ```{code-cell} ipython3
@@ -323,27 +319,26 @@ for i in range(1, len(t)):
 
     
 # analytical
-t_an = np.linspace(1900, 2020, 11)    
+t_an = np.linspace(1900, 2020, 7)    
+print(t_an[0])
 P_an = np.zeros(len(t_an))
 t_0 = t_an[0]
 P_0 = 1.578e9
-#for i in range(0, len(t_an)):
-    #P_an[i] = P_0 * np.exp(k*(t_an[i]-t_0))
-P_an = P_0 * np.exp(k*(t_an-t_0)) 
-
+for i in range(1, len(t_an)):
+    P_an[i] = P_0 * np.exp(k*(t_an[i]-t_0))
+    
     
 plt.plot(t_an, P_an, label = 'Analytical')
+print(t_an, P_an)
 
-plt.plot(t, P, 'o-', label = 'Euler Approx.')
+plt.plot(t, P, label = 'Euler Approx.')
 plt.plot(year, pop, 's', label = 'Measured Data')
 plt.xlabel('Time')
 plt.ylabel('Population')
 plt.legend()
 ```
 
-b. As the number of time steps increases, the Euler approximation approaches the analytical solution, not the measured data. The best-case scenario is that the Euler solution is the same as the analytical solution. This is verified by increasing the number of time steps in the Euler Approximation, specifically, it is the variable ```t``` in the line: ```t = np.linspace(1900, 2020, t)```. 
-
-This is the case, as the Euler Approximation is used for approximating solutions to differential equations, working by approximating a solution curve with line segments. Therefore, at best case, it will only ever match the true analytical solution, not the measured data.
+b. As the number of time steps increases, the Euler approximation approaches the analytical solution, not the measured data. The best-case scenario is that the Euler solution is the same as the analytical solution.
 
 +++
 
@@ -385,8 +380,9 @@ print("Relative error of second-order approximation =", rel_error)
 ```
 
 ```{code-cell} ipython3
-# taylor expansion function
+## Second-Order Solution Time
 
+%%time
 from math import factorial
 def exptaylor(x,n):
     '''Taylor series expansion about x=0 for the function e^x
@@ -400,56 +396,31 @@ def exptaylor(x,n):
         for i in range(1,n):
             ex+=x**(i+1)/factorial(i+1) # add the nth-order result for each step in loop
         return ex
+        
 
-print('b.')
-```
-
-```{code-cell} ipython3
-%%time
 order_2 = exptaylor(1, 2)
 ```
 
 ```{code-cell} ipython3
+## Tenth-Order Solution Time
+
 %%time
+from math import factorial
+def exptaylor(x,n):
+    '''Taylor series expansion about x=0 for the function e^x
+    the full expansion follows the function
+    e^x = 1+ x + x**2/2! + x**3/3! + x**4/4! + x**5/5! +...'''
+    if n<1:
+        print('lowest order expansion is 0 where e^x = 1')
+        return 1
+    else:
+        ex = 1+x # define the first-order taylor series result
+        for i in range(1,n):
+            ex+=x**(i+1)/factorial(i+1) # add the nth-order result for each step in loop
+        return ex
+        
+
 order_2 = exptaylor(1, 10)
-```
-
-```{code-cell} ipython3
-# Estimating 100,000th order Taylor Expansion time:
-
-t_2 = 9
-t_10 = 13
-
-delta = (t_10 - t_2) / (10 - 2)         # change in time / change in order
-
-t_100000 = t_2 + delta * (100000 - t_2)           # this is simply a linear equation (y = mx + b) for approximating trends
-
-print("Time Estimation =", t_100000, "micro-seconds \nNote: this is just an estimation of magnitude")
-```
-
-```{code-cell} ipython3
-#Creating log-Log plot:
-
-n = np.arange(1, 25, 1) # create an array from 1 to 1000 with N values
-N = len(n)
-error = np.zeros(N)    # initialize an N-valued array of relative errors
-
-e_num = []
-
-for i in range(0,N):
-    e_numerical = exptaylor(1, n[i])    # numerically calculated e-value
-    e_num.append(e_numerical)
-    e_actual = np.exp(1)          # actual e-value
-    error[i] = abs((e_num[i] - e_actual) / e_actual)
-    
- 
-
-
-plt.semilogy(n, error,'o')
-#plt.plot(n, error, 'o')
-plt.xlabel('Taylor Epansion Order #')
-plt.ylabel('relative error')
-plt.title('Taylor Expansion Relative Error Trend')
 ```
 
 ```{code-cell} ipython3
